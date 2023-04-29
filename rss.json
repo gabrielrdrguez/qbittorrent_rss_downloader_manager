@@ -1,0 +1,22 @@
+{
+  "Rule Name": {
+    "addPaused": null,
+    "affectedFeeds": [
+      "https://rss_feed_example.dev"
+    ],
+    "assignedCategory": "Category",
+    "enabled": true,
+    "episodeFilter": "",
+    "ignoreDays": 0,
+    "lastMatch ": "",
+    "mustContain": "Rule Name",
+    "mustNotContain": "",
+    "previouslyMatchedEpisodes": [
+
+    ],
+    "savePath": "E:/Downloads/Rule Name",
+    "smartFilter": false,
+    "torrentContentLayout": null,
+    "useRegex": false
+  }
+}
