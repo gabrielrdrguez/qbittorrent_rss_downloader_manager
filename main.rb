@@ -1,19 +1,33 @@
 require 'json'
+require 'yaml'
 require 'irb/cmd/debug'
+require 'ostruct'
+require 'fileutils'
 
+FileUtils.cp 'configuration.example.yml', 'configuration.yml' unless File.exist?('configuration.yml')
+FileUtils.cp 'rss.example.json', 'rss.json' unless File.exist?('rss.json')
 @json = JSON.parse(File.read('rss.json'))
-AFFECTED_FEEDS = ['https://rss_feed_example.dev'].freeze
-CATEGORY = 'Category'.freeze
+@configuration = File.read('configuration.yml')
+                     .then { |string| YAML.safe_load(string) }
+                     .then { |hash| OpenStruct.new(hash) }
+def downloads_directory
+  @downloads_directory ||= standardize_path(@configuration.downloads_directory)
+end
+
+def standardize_path(path)
+  path[-1] == '/' ? path : path << '/'
+end
+
 def add(title)
-  return 'invalid filename' unless /^([^<>\/:\|\?\*\"\\]{1,})$/.match? title
+  return 'invalid filename' unless %r{^([^<>/:\|\?\*\"\\]{1,})$}.match? title
 
   irb_context.echo = false
   @json.merge!(
     {
       title => {
         'addPaused' => nil,
-        'affectedFeeds' => AFFECTED_FEEDS,
-        'assignedCategory' => CATEGORY,
+        'affectedFeeds' => @configuration.feeds,
+        'assignedCategory' => @configuration.category,
         'enabled' => true,
         'episodeFilter' => '',
         'ignoreDays' => 0,
@@ -21,7 +35,7 @@ def add(title)
         'mustContain' => title,
         'mustNotContain' => '',
         'previouslyMatchedEpisodes' => [],
-        'savePath' => "E:/Downloads/#{title}",
+        'savePath' => downloads_directory + title,
         'smartFilter' => false,
         'torrentContentLayout' => nil,
         'useRegex' => false
@@ -60,7 +74,7 @@ def change_dir(path)
   irb_context.echo = false
   @json.each_pair do |_key, value|
     folder = value['savePath'].split('/').last
-    path[-1] == '/' ? path : path << '/'
+    standardize_path(path)
     value['savePath'] = path + folder
   end
   @json.each_value { |value| puts value['savePath'] }

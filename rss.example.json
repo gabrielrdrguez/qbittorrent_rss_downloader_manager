@@ -4,7 +4,7 @@
     "affectedFeeds": [
       "https://rss_feed_example.dev"
     ],
-    "assignedCategory": "Category",
+    "assignedCategory": "YourCategory",
     "enabled": true,
     "episodeFilter": "",
     "ignoreDays": 0,
@@ -14,7 +14,7 @@
     "previouslyMatchedEpisodes": [
 
     ],
-    "savePath": "E:/Downloads/Rule Name",
+    "savePath": "C:/Downloads/Rule Name",
     "smartFilter": false,
     "torrentContentLayout": null,
     "useRegex": false

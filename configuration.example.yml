@@ -1,0 +1,4 @@
+feeds:
+  - https://rss_feed_example.dev
+category: YourCategory
+downloads_directory: 'C:/Downloads'
