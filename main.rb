@@ -3,8 +3,8 @@
 require 'json'
 require 'irb/cmd/debug'
 require_relative 'src/configuration'
-require_relative 'src/rss_rule_repository'
-require_relative 'src/rules_file'
+require_relative 'src/rss/rules/repository'
+require_relative 'src/rss/rules/file'
 
 class Main
   def initialize(repository:, config:)
@@ -37,7 +37,7 @@ class Main
 
   def save
     irb_context.echo = true
-    RulesFile.save(repository.repo)
+    RSS::Rules::File.save(repository.repo)
   end
 
   def show(title)
@@ -67,8 +67,8 @@ class Main
   end
 end
 
-repo = RSSRuleRepository.new
-rules_json = RulesFile.load_file
+repo = RSS::Rules::Repository.new
+rules_json = RSS::Rules::File.load_file
 configuration = Configuration.new
 repo.load(rules_json)
 
