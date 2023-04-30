@@ -67,10 +67,10 @@ class Main
   end
 end
 
-repo = RSS::Rules::Repository.new
-rules_json = RSS::Rules::File.load_file
+repository = RSS::Rules::Repository.new
+rules_json = RSS::Rules::File.load
 configuration = Configuration.new
-repo.load(rules_json)
+repository.load(rules_json)
 
-main = Main.new(repository: repo, config: configuration)
+main = Main.new(repository: repository, config: configuration)
 main.console

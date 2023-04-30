@@ -11,9 +11,7 @@
     "lastMatch ": "",
     "mustContain": "Rule Name",
     "mustNotContain": "",
-    "previouslyMatchedEpisodes": [
-
-    ],
+    "previouslyMatchedEpisodes": [],
     "savePath": "C:/Downloads/Rule Name",
     "smartFilter": false,
     "torrentContentLayout": null,

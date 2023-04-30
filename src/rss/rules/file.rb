@@ -4,14 +4,17 @@ require 'fileutils'
 module RSS
   module Rules
     module File
+      EXAMPLE_FILE_PATH = 'rss.example.json'
+      FILE_PATH         = 'rss.json'
+
       class << self
-        def load_file
-          FileUtils.cp 'rss.example.json', 'rss.json' unless ::File.exist?('rss.json')
-          JSON.parse(::File.read('rss.json'))
+        def load
+          FileUtils.cp(EXAMPLE_FILE_PATH, FILE_PATH) unless ::File.exist?(FILE_PATH)
+          JSON.parse(::File.read(FILE_PATH))
         end
 
         def save(hash)
-          ::File.write('rss.json', JSON.pretty_generate(hash))
+          ::File.write(FILE_PATH, JSON.pretty_generate(hash))
         end
       end
     end
