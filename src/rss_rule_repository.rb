@@ -1,20 +1,21 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'singleton'
 
-class RSS
+class RSSRuleRepository
   include Singleton
-  extend Forwardable
 
   class << self
-    def json
-      FileUtils.cp 'rss.example.json', 'rss.json' unless File.exist?('rss.json')
-      @@json ||= JSON.parse(File.read('rss.json'))
-    end
+    def repo = @repo ||= {}
+    def count = repo.count
+    def load(hash) = repo.merge!(hash)
 
+    # rubocop:disable Metrics/MethodLength
     def add!(title:, feeds:, category:, save_path:)
       return 'invalid path / filename' unless validate_path(save_path)
 
-      json.merge!(
+      repo.merge!(
         {
           title => {
             'addPaused' => nil,
@@ -35,19 +36,24 @@ class RSS
         }
       )
     end
+    # rubocop:enable Metrics/MethodLength
 
-    def delete(title)
-      json.delete(title)
+    def delete!(title)
+      repo.delete(title)
     end
 
-    def save
-      File.write('rss.json', JSON.pretty_generate(json))
+    def find(title)
+      repo[title]
+    end
+
+    def update!(title, attributes)
+      find(title).merge!(attributes)
     end
 
     private
 
     def validate_path(path)
-      path.split('/')[1..-1].all? { |dir| %r{^([^<>/:\|\?\*\"\\]{1,})$}.match?(dir) }
+      path.split('/')[1..].all? { |dir| %r{^([^<>/:|?*"\\]+)$}.match?(dir) }
     end
   end
 end

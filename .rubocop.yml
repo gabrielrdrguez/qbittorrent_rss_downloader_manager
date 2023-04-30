@@ -1,0 +1,10 @@
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+
+Style/Documentation:
+  Enabled: false
+
+Lint/Debugger:
+  Exclude:
+    - main.rb

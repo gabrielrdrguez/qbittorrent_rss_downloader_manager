@@ -1,61 +1,71 @@
+# frozen_string_literal: true
+
 require 'json'
-require 'yaml'
 require 'irb/cmd/debug'
-require 'ostruct'
-require 'fileutils'
-require_relative 'configuration'
-require_relative 'rss'
+require_relative 'src/configuration'
+require_relative 'src/rss_rule_repository'
+require_relative 'src/rules_file'
 
-def standardize_path(path)
-  path[-1] == '/' ? path : path << '/'
-end
-
-def add(title)
-  irb_context.echo = false
-
-  RSS.add!(
-    title: title,
-    feeds: Configuration.rss_feeds,
-    category: Configuration.category,
-    save_path: Configuration.downloads_directory + title
-  )
-
-  irb_context.echo = true
-  true
-end
-
-def list
-  puts RSS.json.keys
-end
-
-def save
-  irb_context.echo = true
-  RSS.save
-end
-
-def show(title)
-  puts JSON.pretty_generate RSS.json[title]
-end
-
-def remove(title)
-  irb_context.echo = false
-  RSS.delete(title)
-  irb_context.echo = true
-  true
-end
-
-def count
-  RSS.json.count
-end
-
-def change_dir(path)
-  irb_context.echo = false
-  RSS.json.each_pair do |_key, value|
-    folder = value['savePath'].split('/').last
-    standardize_path(path)
-    value['savePath'] = path + folder
+class Main
+  def initialize
+    rules_json = RulesFile.load_file
+    RSSRuleRepository.load(rules_json)
   end
-  RSS.json.each_value { |value| puts value['savePath'] }
+
+  def console
+    binding.irb
+  end
+
+  def add(title)
+    irb_context.echo = false
+
+    RSSRuleRepository.add!(
+      title:,
+      feeds: Configuration.rss_feeds,
+      category: Configuration.category,
+      save_path: Configuration.downloads_directory + title
+    )
+
+    irb_context.echo = true
+    true
+  end
+
+  def list
+    irb_context.echo = false
+    puts RSSRuleRepository.repo.keys
+  end
+
+  def save
+    irb_context.echo = true
+    RulesFile.save(RSSRuleRepository.repo)
+  end
+
+  def show(title)
+    puts JSON.pretty_generate RSSRuleRepository.find(title)
+  end
+
+  def remove(title)
+    irb_context.echo = false
+    RSSRuleRepository.delete!(title)
+    irb_context.echo = true
+    true
+  end
+
+  def count
+    irb_context.echo = true
+    RSSRuleRepository.count
+  end
+
+  def update_all_dir(path)
+    irb_context.echo = false
+    RSSRuleRepository.repo.each_pair do |key, value|
+      folder = value['savePath'].split('/').last
+      path[-1] == '/' ? path : path << '/'
+      RSSRuleRepository.update!(key, { 'savePath' => path + folder })
+    end
+    RSSRuleRepository.repo.each_value { |value| puts value['savePath'] }
+  end
 end
 
-binding.irb
+main = Main.new
+main.console
