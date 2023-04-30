@@ -27,7 +27,6 @@ class Configuration
 
   private
 
-
   def standardize_path(path)
     path[-1] == '/' ? path : path << '/'
   end
