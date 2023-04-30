@@ -7,23 +7,23 @@ require_relative 'src/rss_rule_repository'
 require_relative 'src/rules_file'
 
 class Main
-  def initialize
-    rules_json = RulesFile.load_file
-    RSSRuleRepository.load(rules_json)
+  def initialize(repository:, config:)
+    @repository = repository
+    @config = config
   end
 
-  def console
-    binding.irb
-  end
+  attr_reader :repository, :config
+
+  def console = binding.irb
 
   def add(title)
     irb_context.echo = false
 
-    RSSRuleRepository.add!(
+    repository.add!(
       title:,
-      feeds: Configuration.rss_feeds,
-      category: Configuration.category,
-      save_path: Configuration.downloads_directory + title
+      feeds: config.rss_feeds,
+      category: config.category,
+      save_path: config.downloads_directory + title
     )
 
     irb_context.echo = true
@@ -32,40 +32,45 @@ class Main
 
   def list
     irb_context.echo = false
-    puts RSSRuleRepository.repo.keys
+    puts repository.repo.keys
   end
 
   def save
     irb_context.echo = true
-    RulesFile.save(RSSRuleRepository.repo)
+    RulesFile.save(repository.repo)
   end
 
   def show(title)
-    puts JSON.pretty_generate RSSRuleRepository.find(title)
+    puts JSON.pretty_generate repository.find(title)
   end
 
   def remove(title)
     irb_context.echo = false
-    RSSRuleRepository.delete!(title)
+    repository.delete!(title)
     irb_context.echo = true
     true
   end
 
   def count
     irb_context.echo = true
-    RSSRuleRepository.count
+    repository.count
   end
 
   def update_all_dir(path)
     irb_context.echo = false
-    RSSRuleRepository.repo.each_pair do |key, value|
+    repository.repo.each_pair do |key, value|
       folder = value['savePath'].split('/').last
       path[-1] == '/' ? path : path << '/'
-      RSSRuleRepository.update!(key, { 'savePath' => path + folder })
+      repository.update!(key, { 'savePath' => path + folder })
     end
-    RSSRuleRepository.repo.each_value { |value| puts value['savePath'] }
+    repository.repo.each_value { |value| puts value['savePath'] }
   end
 end
 
-main = Main.new
+repo = RSSRuleRepository.new
+rules_json = RulesFile.load_file
+configuration = Configuration.new
+repo.load(rules_json)
+
+main = Main.new(repository: repo, config: configuration)
 main.console
