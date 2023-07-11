@@ -48,6 +48,10 @@ module RSS
         repo[title]
       end
 
+      def search(title)
+        repo.select { |key, _| key.downcase.include?(title.downcase) }
+      end
+
       def update!(title, attributes)
         find(title).merge!(attributes)
       end
