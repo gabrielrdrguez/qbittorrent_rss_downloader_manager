@@ -11,7 +11,7 @@ module RSS
       attr_reader :repo
 
       def count = repo.count
-      def load(hash) = repo.merge!(hash)
+      def load(hash)= @repo = hash
 
       # rubocop:disable Metrics/MethodLength
       def add!(title:, feeds:, category:, save_path:)
@@ -54,6 +54,10 @@ module RSS
 
       def update!(title, attributes)
         find(title).merge!(attributes)
+      end
+
+      def each(&block)
+        repo.each(&block)
       end
 
       private
